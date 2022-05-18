@@ -27,7 +27,7 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="MpK-7Y-Nif">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="MpK-7Y-Nif" customClass="MyCollectionViewCell" customModule="Collection" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="128" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="lMS-5U-ZY4">
@@ -62,6 +62,10 @@
                                                 <constraint firstItem="Jc5-fp-Bdz" firstAttribute="top" secondItem="lMS-5U-ZY4" secondAttribute="top" id="tRD-Q7-JnS"/>
                                             </constraints>
                                         </collectionViewCellContentView>
+                                        <connections>
+                                            <outlet property="imageView" destination="030-8c-41K" id="AP8-D3-MmE"/>
+                                            <outlet property="label" destination="eP9-LW-gLd" id="tYI-mC-TwA"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="hhh" id="Bwc-e8-hTx">

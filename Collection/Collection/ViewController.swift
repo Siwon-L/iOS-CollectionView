@@ -74,11 +74,11 @@ extension ViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! MyCollectionViewCell
         
         cell.backgroundColor = .lightGray
-        (cell.contentView.subviews.first?.subviews.last as! UILabel).text = collectionList[indexPath.row]
-        (cell.contentView.subviews.first?.subviews.first as! UIImageView).image = UIImage(systemName: collectionList[indexPath.item])
+        cell.label.text = collectionList[indexPath.item]
+        cell.imageView.image = UIImage(systemName: collectionList[indexPath.item])
         cell.layer.cornerRadius = 10
         cell.backgroundColor = .white
         cell.layer.borderWidth = 1
