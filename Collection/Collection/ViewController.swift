@@ -7,12 +7,14 @@
 
 import UIKit
 
-enum Section {
+enum Section: Int, CaseIterable, Hashable {
     case main
     case seconde
+    case third
 }
 
-typealias dataSource = UICollectionViewDiffableDataSource<Section, String>
+typealias DataSource = UICollectionViewDiffableDataSource<Section, String>
+typealias Snapshot = NSDiffableDataSourceSnapshot<Section, String>
 
 class ViewController: UIViewController {
     let collectionList = ["swift",
@@ -33,60 +35,61 @@ class ViewController: UIViewController {
                           "restart",
                           "sleep",
                           "escape",
-                          "option",
-                          "command",
-                          "swift",
-                          "pencil",
-                          "scribble",
-                          "highlighter",
-                          "lasso",
-                          "folder",
-                          "paperplane",
-                          "note",
-                          "magazine",
-                          "lanyardcard",
-                          "command",
-                          "rosette",
-                          "link",
-                          "person",
-                          "lineweight",
-                          "restart",
-                          "sleep",
-                          "escape",
-                          "option",
-                          "command"]
+                          "option"]
+    
+    let ccc = ["ss","sss","ssss"]
+    let cccc = ["cc","ccc","cccc"]
+    lazy var dataSource = makeDataSource()
     @IBOutlet weak var collectionView: UICollectionView!
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.delegate = self
-        collectionView.dataSource = self
         collectionView.collectionViewLayout = configureGridLayout()
+        applySnapshot()
     }
 }
 
-extension ViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        collectionList.count
+extension ViewController {
+    func makeDataSource() -> DataSource {
+        let dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! MyCollectionViewCell
+            
+            cell.backgroundColor = .lightGray
+            cell.label.text = itemIdentifier
+            cell.imageView.image = UIImage(systemName: itemIdentifier)
+            cell.layer.cornerRadius = 10
+            cell.backgroundColor = .white
+            cell.layer.borderWidth = 1
+            cell.layer.borderColor = UIColor.gray.cgColor
+            print("sss")
+            
+            return cell
+        }
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            guard kind == UICollectionView.elementKindSectionHeader else { return nil }
+            let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "hhh", for: indexPath)
+            
+            //let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
+            return view
+            
+        }
+        
+        return dataSource
     }
     
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 3
+    func applySnapshot() {
+        var snapshot = Snapshot()
+        snapshot.appendSections(Section.allCases)
+        
+        snapshot.appendItems(collectionList, toSection: .main)
+        snapshot.appendItems(ccc, toSection: .seconde)
+        snapshot.appendItems(cccc, toSection: .third)
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! MyCollectionViewCell
-        
-        cell.backgroundColor = .lightGray
-        cell.label.text = collectionList[indexPath.item]
-        cell.imageView.image = UIImage(systemName: collectionList[indexPath.item])
-        cell.layer.cornerRadius = 10
-        cell.backgroundColor = .white
-        cell.layer.borderWidth = 1
-        cell.layer.borderColor = UIColor.gray.cgColor
-        
-        return cell
-    }
-        
+    
+    
 }
 
 extension ViewController: UICollectionViewDelegateFlowLayout {
@@ -102,8 +105,11 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     //    }
     
     private func configureGridLayout() -> UICollectionViewCompositionalLayout {
-        return UICollectionViewCompositionalLayout { (sectionNumber, env) -> NSCollectionLayoutSection? in
-            if sectionNumber == 0 {
+        return UICollectionViewCompositionalLayout { (sectionNumber, _) -> NSCollectionLayoutSection? in
+            
+            guard let sectionKind = Section(rawValue: sectionNumber) else { return nil }
+            
+            if sectionKind == .main {
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(1)))
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.9), heightDimension: .estimated(200)), subitems: [item])
                 group.contentInsets = .init(top: 0, leading: 5, bottom: 16, trailing: 5)
@@ -112,7 +118,7 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
                 section.orthogonalScrollingBehavior = .groupPaging
                 section.contentInsets = .init(top: 0, leading: 16, bottom: 0, trailing: 16)
                 return section
-            } else if sectionNumber == 1 {
+            } else if sectionKind == .seconde {
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(1)))
                 item.contentInsets = .init(top: 0, leading: 5, bottom: 16, trailing: 5)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(0.45), heightDimension: .estimated(200)), subitems: [item])
@@ -142,16 +148,16 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension ViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if kind == UICollectionView.elementKindSectionHeader {
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "hhh", for: indexPath)
-            return header
-        } else {
-            return UICollectionReusableView()
-        }
-    }
-}
+//extension ViewController: UICollectionViewDelegate {
+//    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+//        if kind == UICollectionView.elementKindSectionHeader {
+//            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "hhh", for: indexPath)
+//            return header
+//        } else {
+//            return UICollectionReusableView()
+//        }
+//    }
+//}
 
 
 
